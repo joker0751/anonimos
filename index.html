@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>VAnonimato</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #ff0033;
+            text-shadow: 0 0 10px #ff0033;
+        }
+
+        .msg {
+            background: #121212;
+            border: 1px solid #ff0033;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .ttl {
+            height: 4px;
+            background: #ff0033;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            animation: ttl 30s linear forwards;
+        }
+
+        @keyframes ttl {
+            from {
+                width: 100%;
+            }
+
+            to {
+                width: 0%;
+            }
+        }
+
+        input,
+        textarea,
+        button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        button {
+            background: #ff0033;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>💬 VAnonimato</h1>
+    <input id="autor" placeholder="Seu nome (opcional)" />
+    <textarea id="texto" placeholder="Digite sua mensagem..."></textarea>
+    <button onclick="enviar()">Enviar</button>
+
+    <div id="mensagens"></div>
+
+    <script>
+        function enviar() {
+            const autor = document.getElementById('autor').value || 'Anônimo';
+            const texto = document.getElementById('texto').value.trim();
+            if (!texto) return;
+
+            fetch('/api/mensagem', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ autor, texto })
+            })
+                .then(res => res.json())
+                .then(() => {
+                    mostrarMensagem(autor, texto);
+                    document.getElementById('texto').value = '';
+                });
+        }
+
+        function mostrarMensagem(autor, texto) {
+            const div = document.createElement('div');
+            div.className = 'msg';
+            div.innerHTML = `<strong>${autor}</strong><br>${texto}<div class="ttl"></div>`;
+            document.getElementById('mensagens').appendChild(div);
+
+            setTimeout(() => div.remove(), 30000); // Remove após 30s
+        }
+    </script>
+</body>
+
+</html>
